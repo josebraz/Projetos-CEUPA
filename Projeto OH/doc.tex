@@ -1,0 +1,150 @@
+\documentclass{article}
+
+\usepackage{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsfonts, amssymb}
+\begin{document}
+	\title{Projeto OH \footnote{OH significa Organização e Higiene}}
+	\author{Jose Braz}
+	\date{26/08/2018}
+
+	\maketitle
+
+	\section{Resumo}
+
+	Uso de Programação linear para resolver o problema da melhor alocação de
+	moradores para a limpeza das áreas do andar superior da Casa III da instituição
+	CEUPA (Casa Estudantil Universitária de Porto Alegre). O problema consiste
+	em escolher os moradores para cada área de forma que todas as áreas sejam
+	distribuídas o mais uniformemente possível (com a menor variância). É
+	preciso garantir que todas as áreas sejam limpas duas vezes na semana e todos
+	os moradores devem limpar exatamente uma área na semana.
+	A distribuição se dá em duas etapas:
+
+	\begin{enumerate}
+		\item Uma fila circular de moradores para as áreas B, E e F
+		\item Uma alocação para as restantes áreas comuns A, C e D
+	\end{enumerate}
+
+	O foco será na segunda etapa.
+
+	\section{Modelo}
+
+	Objective \\
+	\begin{equation} \label{obj}
+		Max \sum_{k \in C}{\sum_{i \in CA}{P_{QAM_k, i} * M_{i,k}}}
+	\end{equation}
+
+	Subject to \\
+	% Restrição de linha
+	\begin{equation} \label{row_r}
+		\sum_{k \in C}{M_{i,k}} = \sum_{k \in C}{QAM_{i,k}} + 2 \quad \forall i \in CA
+	\end{equation}
+
+	% Restrição de coluna
+	\begin{equation} \label{columm_r}
+		\sum_{i \in CA}{M_{i,k}} = \sum_{i \in CA}{QAM_{i,k}} + 1 \quad \forall k \in C
+	\end{equation}
+
+	% Restrição de quantidade
+	\begin{equation} \label{quant_r}
+		M_{i,k} \geq QAM_{i,k} \quad \forall k \in C \quad \forall i \in CA
+	\end{equation}
+
+	Onde:
+	\begin{itemize}
+		\item $CA$ é o conjuto das áreas comuns ($\{A, C, D\}$)
+		\item $C$ é o conjuto dos CLEANERS (moradores que irão limpar as áreas comuns)
+		\item $QAM_{i,k}$ onde: $i \in CA$ e $k \in C$ \\
+			  representa a quantidade de vezes que o morador $k$ fez a área $i$
+			  historicamente (guarda a informação para as proximas computações)
+		\item $M_{i,k}$ onde: $i \in CA$ e $k \in C$ \\
+			  representa a quantidade de vezes que o morador $k$ fez a área $i$
+			  mais a computação dos próximos a limpar as áreas.
+		\item $P_{\bar{x},y}$ é a função que retorna um inteiro correspondente ao peso
+			  que a área $y$ tem de acordo com a diferença com o maior elemento
+			  do vetor de áreas comuns $\bar{x}$. A função é dada por:
+			  $$P_{\bar{x},y} = 5^{maximun(\bar{x}) - \bar{x}_y}$$
+	\end{itemize}
+	O objetivo (\ref{obj}) é um somatório ponderado de acordo com a função
+	$P_{\bar{x},y}$, logo quanto maior o peso, maior será a prioridade em
+	aumentar o $M_{i,k}$, fazendo com que a diferença entre as áreas $i$ feitas
+	por $k$ seja pequena. A restrição de linha (\ref{row_r}) garante
+	que cada área será feita duas vezes naquela semana. A restrição de coluna
+	(\ref{columm_r}) garante que cada morador irá fazer a limpeza exatamente
+	uma vez naquela semana. A restrição de quantidade (\ref{quant_r}) garante
+	que a matriz $M$ será maior que a matriz histórica $QAM$, ou seja, conserva
+	a informação das limpezas feitas nas semanas anteriores. A diferença entre
+	$M_{i,k}$ e $QAM_{i,k}$ gera uma matriz binária que representa qual morador
+	deve limpar determinada área naquela semana.
+
+	\section{Exemplo}
+	O algorítmo aplicado para o seguinte QAM \\
+
+	\begin{tabular}{c|cccccc}
+		&	Lais &	Gustavo &	Jose &	Filipe &	Renata &	Tales \\ \hline
+		A &	5	 &  3 		&	3	 & 	5      &  	4	   &	5 \\
+		C &	6	 &  3 		&	4	 & 	5      &  	5	   &	3 \\
+		D &	7	 &  5 		&	3	 & 	3      &  	6	   &	4 \\
+	\end{tabular}
+	\vspace{1cm}
+
+	Objetivo:
+	\begin{multline}
+		Max \quad 25 M_{A,Lais} + 5 M_{C,Lais} + M_{D,Lais} + 25 M_{A,Gustavo} + \\
+		25 M_{C,Gustavo} + M_{D,Gustavo} + 5 M_{A,Jose} + M_{C,Jose} + 5 M_{D,Jose} + \\
+		M_{A,Filipe} + M_{C,Filipe} + 25 M_{D,Filipe} + 25 M_{A,Renata} + \\
+		5 M_{C,Renata} + M_{D,Renata} + M_{A,Tales} + 25 M_{C,Tales} + 5 M_{D,Tales}
+	\end{multline}
+	\vspace{5mm}
+
+	Restrições de Linha: \\
+	$M_{A,Lais} + M_{A,Gustavo} + M_{A,Jose} + M_{A,Filipe} + M_{A,Renata} + M_{A,Tales} = 27$ \\
+    $M_{C,Lais} + M_{C,Gustavo} + M_{C,Jose} + M_{C,Filipe} + M_{C,Renata} + M_{C,Tales} = 28$ \\
+    $M_{D,Lais} + M_{D,Gustavo} + M_{D,Jose} + M_{D,Filipe} + M_{D,Renata} + M_{D,Tales} = 30$
+	\vspace{5mm}
+
+	Restrições de Coluna: \\
+    $M_{A,Lais} + M_{C,Lais} + M_{D,Lais} = 19$ \\
+    $M_{A,Gustavo} + M_{C,Gustavo} + M_{D,Gustavo} = 12$ \\
+    $M_{A,Jose} + M_{C,Jose} + M_{D,Jose} = 11$ \\
+    $M_{A,Filipe} + M_{C,Filipe} + M_{D,Filipe} = 14$ \\
+    $M_{A,Renata} + M_{C,Renata} + M_{D,Renata} = 16$ \\
+    $M_{A,Tales} + M_{C,Tales} + M_{D,Tales} = 13$
+	\vspace{5mm}
+
+	Restrições de Quantidade: \\
+    $M_{A,Lais} \geq 5$ \\
+    $M_{C,Lais} \geq 6$ \\
+    $M_{D,Lais} \geq 7$ \\
+    $M_{A,Gustavo} \geq 3$ \\
+    $M_{C,Gustavo} \geq 3$ \\
+    $M_{D,Gustavo} \geq 5$ \\
+    $M_{A,Jose} \geq 3$ \\
+    $M_{C,Jose} \geq 4$ \\
+    $M_{D,Jose} \geq 3$ \\
+    $M_{A,Filipe} \geq 5$ \\
+    $M_{C,Filipe} \geq 5$ \\
+    $M_{D,Filipe} \geq 3$ \\
+    $M_{A,Renata} \geq 4$ \\
+    $M_{C,Renata} \geq 5$ \\
+    $M_{D,Renata} \geq 6$ \\
+    $M_{A,Tales} \geq 5$ \\
+    $M_{C,Tales} \geq 3$ \\
+    $M_{D,Tales} \geq 4$
+	\vspace{5mm}
+
+	Variável M \\
+    $M_{i,k} \geq 0, integer, \forall i \in \{A,C,D\}, k \in \{Lais,Gustavo,Jose,Filipe,Renata,Tales\}$ \\
+
+	O resultado da diferença entre $M$ e $QAM$ foi: \\
+	
+	\begin{tabular}{c|cccccc}
+		&	Lais &	Gustavo &	Jose &	Filipe &	Renata &	Tales \\ \hline
+		A &	1	 &  0 		&	0	 & 	0      &  	1	   &	0 \\
+		C &	0	 &  1 		&	0	 & 	0      &  	0	   &	1 \\
+		D &	0	 &  0 		&	1	 & 	1      &  	0	   &	0 \\
+	\end{tabular}
+
+
+\end{document}
