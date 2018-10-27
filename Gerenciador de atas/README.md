@@ -3,7 +3,7 @@
 ### Introdução
 Projeto destinado a automatizar a geração de atas da CEUPA o máximo possível.
 São usadas uma série de ferramentas do Google: Docs, Sheet, Drive, e, claro, Google Script.
-O intúito é proporcionar uma forma de, com a menor quantiade de informação fornecida pelo secretário,
+O intúito é proporcionar uma forma de, com a menor quantidade de informação fornecida pelo secretário,
 gerar uma ata que contém as informações iniciais e final da reunião, partindo do princípio que sempre
 essas partes seguem basicamente um padrão.
 
@@ -23,7 +23,7 @@ e seu texto pronto para substituição. A pasta está disponibilizada no reposit
 copiar para seu repositório no `Google Drive`.
 
 Tendo todo o sistema de pastas pronto, é preciso instalar o script no seu repositório do `Google Drive`.
-Pode fazê-lo seguindo (este tutorial)[https://developers.google.com/apps-script/overview]. 
+Pode fazê-lo seguindo [este tutorial](https://developers.google.com/apps-script/overview). 
 Pode apenas colar o texto do código `gerar atas.js` nesse novo script criado.
 
 
@@ -40,7 +40,7 @@ capturar as informações corretamente.
 Para obter o ID dos seus documentos, é preciso acessar documento e, na barra de endereços do navegador,
 pegar o ID que está entre `d/` e `/edit`. Por exemplo, para o link: 
 `https://docs.google.com/document/d/1SMWUjTKH4JitW4MJfTBk7WwIKGQ0CJD3x6V527fiiF4/edit` o ID é 
-`1SMWUjTKH4JitW4MJfTBk7WwIKGQ0CJD3x6V527fiiF4`. o mesmo vale para pastas no `Google Drive`
+`1SMWUjTKH4JitW4MJfTBk7WwIKGQ0CJD3x6V527fiiF4`. o mesmo vale para pastas no `Google Drive`.
 O ID informada deve ser referente a pasta ou arquivo coerentes no seu repositório. Por exemplo 
 `ID_PASTA_AG` é o ID da pasta que contém as atas de Assembleia geral.
 
