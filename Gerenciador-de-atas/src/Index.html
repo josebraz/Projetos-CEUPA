@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <script>
+  // Prevent forms from submitting.
+  function preventFormSubmit() {
+    var forms = document.querySelectorAll('form');
+    for (var i = 0; i < forms.length; i++) {
+      forms[i].addEventListener('submit', function(event) {
+        event.preventDefault();
+      });
+    }
+  }
+  window.addEventListener('load', preventFormSubmit);
+
+  function enviarFormulario(formObject) {
+    var div = document.getElementById('output');
+    div.innerHTML = "Enviando formulario...";
+    google.script.run.withSuccessHandler(gerar)
+    .withFailureHandler(falha)
+    .processarFormulario(formObject);
+  }
+
+  function gerar(entrada) {
+    var div = document.getElementById('output');
+    div.innerHTML = "Gerando ata...";
+    google.script.run.withSuccessHandler(sucesso)
+    .withFailureHandler(falha)
+    .gerarAta(entrada);
+  }
+
+  function sucesso(url) {
+    var div = document.getElementById('output');
+    div.innerHTML = "Deu tudo certooo: " + "<a href=" + url + ">está aqui</a>";
+  }
+
+  function falha(erro) {
+    var div = document.getElementById('output');
+    div.innerHTML = "Erro: " + erro.message;
+  }
+  </script>
+</head>
+<body>
+  <h1>Gerador de Atas</h1>
+
+  <form id="formulario" onsubmit="enviarFormulario(this)">
+    <p>Dia: <input name="dia" type="date" />(mesma data que constar na tabela de chamada)</p>
+    <p>Horário: <input name="horario" type="time" value="23:30" /> (de início da reunião)</p>
+    <p>Numero da ata: <input name="num_ata" type="number" /></p>
+    <p>Quantidade de votantes: <input name="num_votantes" type="number" /></p>
+    <p>Pontos de pauta: <input name="pautas" />(separados por vírgula)</p>
+    <p>Casa da reunião: <select name="casa_reuniao" >
+      <option value="I">Casa I</option>
+      <option value="II">Casa II</option>
+      <option value="III">Casa III</option>
+    </select></p>
+    <p>Nome da reunião: <select name="nome_reuniao">
+      <option value="<?=NOME_DE?>"><?=NOME_DE?></option>
+      <option value="<?=NOME_AG?>"><?=NOME_AG?></option>
+    </select></p>
+    <p>Escritor: <select name="cargo_escritor">
+      <option value="<?=CARGO_PRIM_SECRETARIO?>"><?=CARGO_PRIM_SECRETARIO?> - <?=NOME_PRIM_SECRETARIO?></option>
+      <option value="<?=CARGO_SEG_SECRETARIO?>"><?=CARGO_SEG_SECRETARIO?> - <?=NOME_SEG_SECRETARIO?></option>
+    </select></p>
+    <p>Quem presidiu: <select name="cargo_coord">
+      <option value="<?=CARGO_PRESIDENTE?>"><?=CARGO_PRESIDENTE?> - <?=NOME_PRESIDENTE?></option>
+      <option value="<?=CARGO_VICE_PRESIDENTE?>"><?=CARGO_VICE_PRESIDENTE?> - <?=NOME_VICE_PRESIDENTE?></option>
+      <option value="<?=CARGO_PRIM_SECRETARIO?>"><?=CARGO_PRIM_SECRETARIO?> - <?=NOME_PRIM_SECRETARIO?></option>
+      <option value="<?=CARGO_SEG_SECRETARIO?>"><?=CARGO_SEG_SECRETARIO?> - <?=NOME_SEG_SECRETARIO?></option>
+    </select></p>
+    <p>Tipo da reunião: <select name="tipo_reuniao">
+      <option value="extraordinária">extraordinária</option>
+      <option value="ordinária">ordinária</option>
+    </select></p>
+
+    <input type="submit" value="Gerar ata!" />
+  </form>
+
+  <div id="output"></div>
+
+</body>
+</html>
